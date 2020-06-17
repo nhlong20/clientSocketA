@@ -11,7 +11,7 @@
 
 IMPLEMENT_DYNAMIC(PrivateChat, CDialogEx)
 
-PrivateChat::PrivateChat(CClientADlg* doc,CWnd* pParent /*=nullptr*/)
+PrivateChat::PrivateChat(ChatOption* doc,CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_PRIVATECHAT, pParent)
 	, m_msgChat(_T(""))
 {
@@ -28,6 +28,7 @@ void PrivateChat::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_CHATBOX, m_msgChat);
 	DDX_Control(pDX, IDC_CHATBOX, c_msgChat);
 	DDX_Control(pDX, IDC_CHATLOG, c_chatLog);
+	GetDlgItem(IDS_RECEIVER)->SetWindowText(m_user->m_fUsername);
 }
 
 
@@ -43,8 +44,9 @@ void PrivateChat::OnBnClickedSend()
 {
 	// TODO: Add your control notification handler code here
 	UpdateData(TRUE);
+
 	/*c_msgChat.GetWindowText(m_msgChat);*/
-	m_msgChat = m_user->getUsername() + ": " + m_msgChat;
+	m_msgChat = m_user->userLogInfo->getUsername() + ": " + m_msgChat;
 	m_msgChat += "\r\n";
 	c_chatLog.ReplaceSel(m_msgChat);
 	m_msgChat = "";

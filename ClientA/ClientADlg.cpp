@@ -13,7 +13,7 @@
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
-
+//using namespace Message;
 
 // CClientADlg dialog
 
@@ -55,7 +55,6 @@ BOOL CClientADlg::OnInitDialog()
 	//  when the application's main window is not a dialog
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
-
 	// TODO: Add extra initialization here
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -135,17 +134,6 @@ bool CClientADlg::connectToServer() {
 	_isConnected = true;
 	return true;
 }
-void CClientADlg::Split(CString src, CString des[2])
-{
-	int p1, p2;
-
-	p1 = src.Find(_T("\r\n"), 0);
-	des[0] = src.Mid(0, p1);
-
-	p2 = src.Find(_T("\r\n"), p1 + 1);
-	des[1] = src.Mid(p1 + 2, p2 - (p1 + 2));
-
-}
 
 char* CClientADlg::convertToPChar(const CString& cStr)
 {
@@ -187,7 +175,7 @@ void CClientADlg::OnBnClickedBtnLogin()
 		return;
 	};
 
-	data.type = "LOGIN";
+	data.type = Messages[Type::LOGIN];
 	UpdateData(FALSE);
 }
 void CClientADlg::OnBnClickedRegister()
@@ -216,7 +204,7 @@ void CClientADlg::OnBnClickedRegister()
 		MessageBox(L"Cannot call WSAAsyncSelect");
 		return;
 	};
-	data.type = "REGISTER";
+	data.type = Messages[Type::REGISTER];
 }
 
 LRESULT CClientADlg::SockMsg(WPARAM wParam, LPARAM lParam)
@@ -233,24 +221,29 @@ LRESULT CClientADlg::SockMsg(WPARAM wParam, LPARAM lParam)
 	{
 		CommonData response;
 		response = receiveCommonData(_cSocket);
-		if (response.type == "LOGIN_SUCCESS") {
+		if (response.type == Messages[Type::LOGIN_SUCCESS]) {
 			MessageBox(CString(response.message.c_str()), _T("Server response"));
 			EndDialog(IDD_CLIENTA_DIALOG);
 			bool loginStatus = false;
-			CString userInfo;
-			ChatOption* chatOptionDialog = new ChatOption(this);
-			if (chatOptionDialog->DoModal() == IDOK) {
-				PrivateChat* privateChatDlg = new PrivateChat(this);
-				privateChatDlg->DoModal();
+			ChatOption* chatOption = new ChatOption(this);
+			if (chatOption->DoModal() != IDOK) {
+				break;
 			}
+			if (chatOption->chatMode == CHAT_MODE::GROUP_CHAT) {
+
+			}
+			if (chatOption->chatMode == CHAT_MODE::PRIVATE_CHAT) {
+				 chatOption->m_fUsername;
+			}
+				
 		}
-		if (response.type == "LOGIN_FAIL") {
+		if (response.type == Messages[Type::LOGIN_FAIL]) {
 			MessageBox(CString(response.message.c_str()), _T("Server response"));
 		}
-		if (response.type == "REG_SUCCESS") {
+		if (response.type == Messages[Type::REG_SUCCESS]) {
 			MessageBox(CString(response.message.c_str()), _T("Server response"));
 		}
-		if (response.type == "REG_FAIL") {
+		if (response.type == Messages[Type::REG_FAIL]) {
 			MessageBox(CString(response.message.c_str()), _T("Server response"));
 		}
 		break;
@@ -261,13 +254,13 @@ LRESULT CClientADlg::SockMsg(WPARAM wParam, LPARAM lParam)
 		CT2CA pwd(this->getPassword());
 		std::string username(uname);
 		std::string password(pwd);
-		if (data.type == "REGISTER") {
+		if (data.type == Messages[Type::REGISTER]) {
 			data.from = "";
 			data.to = "";
 			data.message = username + "\n" + password + '\0';
 			sendCommonData(_cSocket, data);
 		}
-		if (data.type == "LOGIN") {
+		if (data.type == Messages[Type::LOGIN]) {
 			data.from = "";
 			data.to = "";
 			data.message = username + "\n" + password + '\0';

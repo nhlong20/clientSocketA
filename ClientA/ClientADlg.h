@@ -2,8 +2,6 @@
 #define PORT 25000
 #define WM_SOCKET WM_USER+2
 #include "CData.h"
-enum LoginType { LOGIN, REGISTER };
-
 // CClientADlg dialog
 class CClientADlg : public CDialogEx
 {

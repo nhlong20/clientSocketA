@@ -1,5 +1,5 @@
 #pragma once
-#include "ClientADlg.h"
+#include "ChatOption.h"
 
 // PrivateChat dialog
 
@@ -8,7 +8,7 @@ class PrivateChat : public CDialogEx
 	DECLARE_DYNAMIC(PrivateChat)
 
 public:
-	PrivateChat(CClientADlg* doc,CWnd* pParent = nullptr);   // standard constructor
+	PrivateChat(ChatOption* doc,CWnd* pParent = nullptr);   // standard constructor
 	virtual ~PrivateChat();
 
 // Dialog Data
@@ -22,7 +22,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 public:
-	CClientADlg* m_user;
+	ChatOption* m_user;
 public:
 	CString m_msgChat;
 	CEdit c_msgChat;
