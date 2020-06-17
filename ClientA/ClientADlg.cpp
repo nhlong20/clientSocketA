@@ -159,33 +159,6 @@ char* CClientADlg::convertToPChar(const CString& cStr)
 	return str.m_psz;
 }
 
-void CClientADlg::mSend(CString cStr)
-{
-	int Len = cStr.GetLength();
-	Len += Len;
-	PBYTE sendBuff = new BYTE[1000];
-	memset(sendBuff, 0, 1000);
-	memcpy(sendBuff, (PBYTE)(LPCTSTR)cStr, Len);
-	send(_cSocket, (char*)&Len, sizeof(Len), 0);
-	send(_cSocket, (char*)sendBuff, Len, 0);
-	delete sendBuff;
-}
-
-int CClientADlg::mRecv(CString& Command)
-{
-	PBYTE buffer = new BYTE[1000];
-	memset(buffer, 0, 1000);
-	recv(_cSocket, (char*)&buffLength, sizeof(int), 0);
-	recv(_cSocket, (char*)buffer, buffLength, 0);
-	TCHAR* ttc = (TCHAR*)buffer;
-	Command = ttc;
-
-	if (Command.GetLength() == 0)
-		return -1;
-	return 0;
-}
-
-
 void CClientADlg::OnBnClickedBtnLogin()
 {
 	UpdateData(TRUE);
@@ -216,18 +189,6 @@ void CClientADlg::OnBnClickedBtnLogin()
 
 	data.type = "LOGIN";
 	UpdateData(FALSE);
-	//bool loginStatus = false;
-	//CString userInfo;
-	///*while (!loginStatus) {
-
-	//}*/
-	//// Open Chat-Option-Dialog
-	//ChatOption* chatOptionDialog = new ChatOption(this);
-	//if (chatOptionDialog->DoModal() == IDOK) {
-	//	PrivateChat* privateChatDlg = new PrivateChat(this);
-	//	privateChatDlg->DoModal();
-	//}
-
 }
 void CClientADlg::OnBnClickedRegister()
 {
@@ -270,9 +231,28 @@ LRESULT CClientADlg::SockMsg(WPARAM wParam, LPARAM lParam)
 	{
 	case FD_READ:
 	{
-		/*	CommonData response;
-			response = receiveCommonData(_cSocket);*/
-
+		CommonData response;
+		response = receiveCommonData(_cSocket);
+		if (response.type == "LOGIN_SUCCESS") {
+			MessageBox(CString(response.message.c_str()), _T("Server response"));
+			EndDialog(IDD_CLIENTA_DIALOG);
+			bool loginStatus = false;
+			CString userInfo;
+			ChatOption* chatOptionDialog = new ChatOption(this);
+			if (chatOptionDialog->DoModal() == IDOK) {
+				PrivateChat* privateChatDlg = new PrivateChat(this);
+				privateChatDlg->DoModal();
+			}
+		}
+		if (response.type == "LOGIN_FAIL") {
+			MessageBox(CString(response.message.c_str()), _T("Server response"));
+		}
+		if (response.type == "REG_SUCCESS") {
+			MessageBox(CString(response.message.c_str()), _T("Server response"));
+		}
+		if (response.type == "REG_FAIL") {
+			MessageBox(CString(response.message.c_str()), _T("Server response"));
+		}
 		break;
 	}
 	case FD_WRITE:
@@ -282,14 +262,12 @@ LRESULT CClientADlg::SockMsg(WPARAM wParam, LPARAM lParam)
 		std::string username(uname);
 		std::string password(pwd);
 		if (data.type == "REGISTER") {
-			MessageBox(L"reg run");
 			data.from = "";
 			data.to = "";
 			data.message = username + "\n" + password + '\0';
 			sendCommonData(_cSocket, data);
 		}
 		if (data.type == "LOGIN") {
-			MessageBox(L"login clicked");
 			data.from = "";
 			data.to = "";
 			data.message = username + "\n" + password + '\0';
@@ -302,7 +280,7 @@ LRESULT CClientADlg::SockMsg(WPARAM wParam, LPARAM lParam)
 	case FD_CLOSE:
 	{
 		closesocket(_cSocket);
-		m_msgString += _T("Server da dong ket noi\r\n");
+		MessageBox(_T("Server closed connection"));
 		GetDlgItem(IDC_BTN_LOGIN)->EnableWindow(TRUE);
 		UpdateData(FALSE);
 		break;

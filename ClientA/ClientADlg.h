@@ -47,7 +47,6 @@ public:
 
 	CString Command;
 	int	buffLength;
-	CString strResult[2];
 	CString userOnline;
 public:
 	CString getUsername() { return m_username; }
