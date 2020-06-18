@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "CData.h"
 void sendCharArr(SOCKET& sock, const char* charArr) {
-	int buffLen = strlen(charArr);
+	int buffLen = strlen(charArr)*2;
 	send(sock, (char*)&buffLen, sizeof(buffLen), 0);
 	send(sock, charArr, buffLen, 0);
 }
@@ -47,4 +47,8 @@ CommonData receiveCommonData(SOCKET& sock) {
 	//Receive message
 	data.message = receiveString(sock);
 	return data;
+}
+std::string convertCStrToStr(CString cStr) {
+	CT2CA buffer(cStr, CP_UTF8);
+	return std::string(buffer);
 }

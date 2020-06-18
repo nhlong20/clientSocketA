@@ -226,14 +226,10 @@ LRESULT CClientADlg::SockMsg(WPARAM wParam, LPARAM lParam)
 			EndDialog(IDD_CLIENTA_DIALOG);
 			bool loginStatus = false;
 			ChatOption* chatOption = new ChatOption(this);
-			if (chatOption->DoModal() != IDOK) {
+			if (chatOption->DoModal() == IDOK) {
+				CClientADlg dlg;
+				dlg.DoModal();
 				break;
-			}
-			if (chatOption->chatMode == CHAT_MODE::GROUP_CHAT) {
-
-			}
-			if (chatOption->chatMode == CHAT_MODE::PRIVATE_CHAT) {
-				 chatOption->m_fUsername;
 			}
 				
 		}

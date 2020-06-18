@@ -8,9 +8,13 @@ enum Type {
 	REGISTER,
 	REG_SUCCESS,
 	REG_FAIL,
-	PRIVATE_CHAT_TO,
+	LOGOUT,
 	USER_EXIST,
 	USER_NOT_EXIST,
+	PRIVATE_CHAT_TO,
+	PRIVATE_MSG,
+	TRANFER_MSG_SUC,
+	TRANFER_MSG_FAIL,
 };
 
 static std::string Messages[] = {
@@ -20,9 +24,13 @@ static std::string Messages[] = {
 "REGISTER",
 "REG_SUCCESS",
 "REG_FAIL",
-"PRIVATE_CHAT_TO",
+"LOGOUT",
 "USER_EXIST",
 "USER_NOT_EXIST"
+"PRIVATE_CHAT_TO",
+"PRIVATE_MSG",
+"TRANFER_MSG_SUC",
+"TRANFER_MSG_FAIL",
 };
 
 struct CommonData {
@@ -33,6 +41,6 @@ struct CommonData {
 	//CommonTime timeStampt;
 	//int fileSize;	// from 1 to 5 * 1024 * 1024 Bytes
 };
-void convertStr2WStr(std::string& str, std::wstring& wstr);
+std::string convertCStrToStr(CString cStr);
 void sendCommonData(SOCKET& sock, CommonData& data);
 CommonData receiveCommonData(SOCKET& sock);

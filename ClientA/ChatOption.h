@@ -30,4 +30,5 @@ public:
 	afx_msg void OnBnClickedPrivateChat();
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedRadio2();
+	afx_msg void OnBnClickedLogout();
 };
