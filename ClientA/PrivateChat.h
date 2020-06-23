@@ -1,14 +1,13 @@
 #pragma once
 #include "ChatOption.h"
-
 // PrivateChat dialog
-#define WM_TEST WM_USER+4
+#define WM_SOCKET WM_USER+2
 class PrivateChat : public CDialogEx
 {
 	DECLARE_DYNAMIC(PrivateChat)
 
 public:
-	PrivateChat(ChatOption* doc,CWnd* pParent = nullptr);   // standard constructor
+	PrivateChat(ChatOption* doc = nullptr,CWnd* pParent = nullptr);   // standard constructor
 	virtual ~PrivateChat();
 
 // Dialog Data
@@ -24,7 +23,7 @@ protected:
 public:
 	ChatOption* m_user;
 private:
-	void setSenderReceiver(const CString& sender, const CString& receiver);
+	void displayMsg(const CommonData&);
 	
 public:
 	LRESULT SockMsg(WPARAM wParam, LPARAM lParam);
@@ -33,4 +32,12 @@ public:
 	CEdit c_chatLog;
 	CommonData dataSend;
 	afx_msg void OnBnClickedSend();
+	afx_msg void OnBnClickedAttach();
+	CListCtrl m_files;
+	afx_msg void OnBnClickedUpload();
+	void sendFile(CommonData data);
+	void receiveFile(CommonData response);
+	afx_msg void OnBnClickedDownload();
+	afx_msg void OnBnClickedActivate();
+	CMFCButton c_activeBtn;
 };

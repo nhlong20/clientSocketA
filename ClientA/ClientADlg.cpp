@@ -105,33 +105,28 @@ bool CClientADlg::initWinSock() {
 		return false;
 	return true;
 }
-bool CClientADlg::createSocket() {
+bool CClientADlg::createSocket(SOCKET& _socket) {
 	// Create a socket
-	_cSocket = socket(AF_INET, SOCK_STREAM, 0);
-	if (_cSocket == INVALID_SOCKET)
+	_socket = socket(AF_INET, SOCK_STREAM, 0);
+	if (_socket == INVALID_SOCKET)
 		return false;
 	return true;
 }
-bool CClientADlg::connectToServer() {
-	// Convert CString to string (IP -> sIP)
-	CT2CA pszConvertedAnsiString(serverIP);
-	std::string sIP(pszConvertedAnsiString);
-
+bool CClientADlg::connectToServer(SOCKET _socket, std::string serverIP, int serverPort) {
 	// Resolve hostname
 	struct hostent* host = NULL;
-	if ((host = gethostbyname(sIP.c_str())) == NULL)
+	if ((host = gethostbyname(serverIP.c_str())) == NULL)
 		return false;
-
+	sockaddr_in srvAddr;
 	// Copy network address to sockaddr_in structure
 	memcpy(&srvAddr.sin_addr, host->h_addr_list[0], host->h_length);
 	srvAddr.sin_family = AF_INET;
-	srvAddr.sin_port = htons(PORT);
-	inet_pton(AF_INET, sIP.c_str(), &srvAddr.sin_addr);
+	srvAddr.sin_port = htons(serverPort);
+	inet_pton(AF_INET, serverIP.c_str(), &srvAddr.sin_addr);
 
-	int retcode = connect(_cSocket, (struct sockaddr*)&srvAddr, sizeof(srvAddr));
+	int retcode = connect(_socket, (struct sockaddr*)&srvAddr, sizeof(srvAddr));
 	if (retcode == SOCKET_ERROR)
 		return false;
-	_isConnected = true;
 	return true;
 }
 
@@ -161,12 +156,12 @@ void CClientADlg::OnBnClickedBtnLogin()
 		return;
 	};
 
-	if (!this->createSocket()) {
-		MessageBox(L"Create a Listening socket failed");
+	if (!this->createSocket(_cSocket)) {
+		MessageBox(L"Create a Listening socket failed", _T("ERROR"), 0);
 		return;
 	};
 
-	if (!this->connectToServer()) {
+	if (!this->connectToServer(_cSocket,convertCStrToStr(serverIP),PORT)) {
 		MessageBox(_T("Cannot connect to server, please try again!"), _T("ERROR"), 0);
 		return;
 	}
@@ -183,20 +178,21 @@ void CClientADlg::OnBnClickedRegister()
 	UpdateData(TRUE);
 	if (m_username == "")
 	{
-		MessageBox(_T("Username must not be empty!"));
+		MessageBox(_T("Username must not be empty!"), _T("ERROR"), 0);
 		return;
 	}
 
 	if (!this->initWinSock()) {
-		MessageBox(L"WSAStartup failed");
+		MessageBox(L"WSAStartup failed", _T("ERROR"), 0);
 		return;
 	};
 
-	if (!this->createSocket()) {
-		MessageBox(L"Create a Listening socket failed");
+	if (!this->createSocket(_cSocket)) {
+		MessageBox(L"Create a Listening socket failed", _T("ERROR"), 0);
 		return;
 	};
-	if (!this->connectToServer()) {
+
+	if (!this->connectToServer(_cSocket, convertCStrToStr(serverIP), PORT)) {
 		MessageBox(_T("Cannot connect to server, please try again!"), _T("ERROR"), 0);
 		return;
 	}
@@ -227,11 +223,8 @@ LRESULT CClientADlg::SockMsg(WPARAM wParam, LPARAM lParam)
 			bool loginStatus = false;
 			ChatOption* chatOption = new ChatOption(this);
 			if (chatOption->DoModal() == IDOK) {
-				CClientADlg dlg;
-				dlg.DoModal();
 				break;
-			}
-				
+			}	
 		}
 		if (response.type == Messages[Type::LOGIN_FAIL]) {
 			MessageBox(CString(response.message.c_str()), _T("Server response"));
@@ -277,6 +270,5 @@ LRESULT CClientADlg::SockMsg(WPARAM wParam, LPARAM lParam)
 	}
 	return 0;
 }
-
 
 

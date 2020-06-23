@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "CData.h"
 void sendCharArr(SOCKET& sock, const char* charArr) {
-	int buffLen = strlen(charArr)*2;
+	int buffLen = strlen(charArr);
 	send(sock, (char*)&buffLen, sizeof(buffLen), 0);
 	send(sock, charArr, buffLen, 0);
 }

@@ -28,9 +28,9 @@ protected:
 	DECLARE_MESSAGE_MAP()
 	//---------- Client Controller -----------
 public:
-	bool initWinSock();
-	bool createSocket();
-	bool connectToServer();
+	static bool initWinSock();
+	static bool createSocket(SOCKET& _socket);
+	static bool connectToServer(SOCKET _socket, std::string sIP, int serverPort);
 
 	LRESULT SockMsg(WPARAM wParam, LPARAM lParam);
 	char* convertToPChar(const CString&);
@@ -38,9 +38,9 @@ public:
 	void mSend(CString Command);
 	int mRecv(CString& Command);
 public:
-	SOCKET _cSocket, _rSocket;
-	sockaddr_in srvAddr;
-	UINT _serverPort, _fUserPort, _userPort;
+	SOCKET _cSocket;
+
+	//UINT _serverPort, _fUserPort, _userPort;
 	bool _isConnected;
 
 	CString Command;
